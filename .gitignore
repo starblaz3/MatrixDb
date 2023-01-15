@@ -1,0 +1,8 @@
+**.o
+*/log
+/data/temp
+.vscode/
+src/server
+*.py
+*.out
+**test.cpp
