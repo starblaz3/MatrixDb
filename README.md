@@ -10,7 +10,7 @@
 * ## Page layout for matrices
 - Matrices can have rows greater than block size which doesn't allow us to store the rows in blocks in the typical fashion that tables use(offsets based on row size), so to store matrices in pages we follow the submatrix page storage method which dimensionalises each block into a square matrix. Using the image shown below, one block can be thought of as the blue square matrix and the bigger matrix as the input matrix.
 
-    ![submatrix](./submatrix.jpg)
+    ![submatrix](./docs/submatrix.jpg)
 
 - Inorder to implement this type of page storage format, we had to modify and add classes for matrix manipulation such as buffermanager, page and other executor files.
 
