@@ -1,50 +1,27 @@
-[![Open in Visual Studio Code](https://classroom.github.com/assets/open-in-vscode-c66648af7eb3fe8bc4f294546bfd86ef473780cde1dea487d3c4ff354943c9ae.svg)](https://classroom.github.com/online_ide?assignment_repo_id=8229253&assignment_repo_type=AssignmentRepo)
-# SimpleRA
+<p align="center"> 
+    <font size="5">
+        MatrixDb
+    </font>
+</p>
 
-## Compilation Instructions
+## About
+- Extended [SimpleRA](https://github.com/SimpleRA/SimpleRA) to allow storing and processing large matrices with teammate Rohan as part of course(Database Systems) project.
 
-We use ```make``` to compile all the files and creste the server executable. ```make``` is used primarily in Linux systems, so those of you who want to use Windows will probably have to look up alternatives (I hear there are ways to install ```make``` on Windows). To compile
+* ## Page layout for matrices
+- Matrices can have rows greater than block size which doesn't allow us to store the rows in blocks in the typical fashion that tables use(offsets based on row size), so to store matrices in pages we follow the submatrix page storage method which dimensionalises each block into a square matrix. Using the image shown below, one block can be thought of as the blue square matrix and the bigger matrix as the input matrix.
 
-```cd``` into the SimpleRA directory
-```
-cd SimpleRA
-```
-```cd``` into the soure directory (called ```src```)
-```
-cd src
-```
-To compile
-```
-make clean
-make
-```
+    ![submatrix](./submatrix.jpg)
 
-## To run
-
-Post compilation, an executable names ```server``` will be created in the ```src``` directory
-```
-./server
-```
-## To setup your Git Repository
-- Join the course github organisation using the invite link.
-- Join or create a team corresponding to your team name on the organisation.
-- Your repository will be initialised with a template code on succesful authorisation.
-- Now clone your personal repo using ```git clone "your repo link"```.
-- After you have cloned your repo to your system add the main repo as an upstream to your repo so whenever a change is pushed by TA's you can access it.
-- To set it as upstream type ```git remote add upstream https://github.com/SimpleRA/SimpleRA.git```.
-- Now it will be added as upstream.
-- To fetch the changes made by TA's just type ```git pull upstream master --allow-unrelated-histories``` .
-- Manually merge conflicts if there are any !!
+- Inorder to implement this type of page storage format, we had to modify and add classes for matrix manipulation such as buffermanager, page and other executor files.
 
 
-## Git tutorials
-- [Basic github tutorial](https://youtu.be/SWYqp7iY_Tc)
-- [Handling git merge conflicts](https://youtu.be/JtIX3HJKwfo)
-- [What is git stash?](https://youtu.be/KLEDKgMmbBI)
-- [The best way is documentation itself](https://docs.github.com/en)
+* ## CROSS_TRANSPOSE
+- Using submatrix storage method for page layout in our memory, we can transpose each block in the matrix and then transpose these blocks relative to each other inorder to take transpose of the whole matrix.
 
-## Instructions for Creating a Pull Request
-- First fork the repo from the main code repository.
-- Then commit your changes to this forked repository.
-- To create a pull request go to the main repository and click on the pull request option.
-- Kindly only submit your pull requests to the branch **student-pull-requests** only. We won't entertain pull requests to master branch.
+- We use pointers to the matrix pages so that it doesnt exceed memory limilations of 2 blocks and we have 3 pointers, 2(A,B) for the matrix pages to swap and one for temp storage, through this method we ensure only two of these pointers are active at most at any moment, as we iterate row wise through matrix A's blocks we transpose the block and store it in temp and we delete A's memory, then we transpose B's corresponding block and write the swap page to B's corresponding block position which is CxR of A's block position(RxC), after which we write B's block to A's block in the corresponding position and delete the store for both swap and B.
+
+* ## Part 3
+- Since the given matrix is spare and full of zeroes it would be a waste of memory to store the zeroes as they are constant, storing a list of the coordinates of the non-zero values of the matrix would be farly optimal and is the COO method of compressing sparse matrices. We can use tablePage to store this list using columns as (x,y,value).
+- Since the matrix is stored as a table of coordinates inorder to take transpose of this matrix all we need to do is swap the column names in the table and if we want to print this matrix or do further operations on it we need to sort the table by x first and y.
+- External merge sort can be used as input file size could be big.
+
